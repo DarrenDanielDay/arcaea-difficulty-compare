@@ -1,9 +1,9 @@
 .chart-display {
-  width: 8em;
+  min-width: 8em;
   min-height: 8em;
   .song-title {
     text-align: center;
-    width: 6em;
+    min-width: 6em;
   }
 }
 

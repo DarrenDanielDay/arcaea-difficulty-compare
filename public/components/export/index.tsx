@@ -8,6 +8,7 @@ export interface MemoryFile {
 
 export interface ExportFileProp {
   exportText?: string;
+  linkText?: string;
   getFile: () => Promise<MemoryFile>;
 }
 
@@ -16,7 +17,7 @@ interface DLC extends MemoryFile {
   blob: Blob;
 }
 
-export const ExportFile: FC<ExportFileProp> = ({ exportText, getFile }) => {
+export const ExportFile: FC<ExportFileProp> = ({ exportText, linkText, getFile }) => {
   const [dlc, setDLC] = useState<DLC | null>(null);
   const handleExport = async () => {
     const file = await getFile();
@@ -45,7 +46,7 @@ export const ExportFile: FC<ExportFileProp> = ({ exportText, getFile }) => {
       {dlc != null && (
         <div class="my-3">
           <a class="primary-link mx-3" href={dlc.url} download={dlc.filename}>
-            点击下载
+            {linkText || "点击下载"}
           </a>
           <button class="btn btn-secondary" onClick={handleComplete}>
             删除链接

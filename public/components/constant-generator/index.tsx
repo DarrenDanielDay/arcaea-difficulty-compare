@@ -65,6 +65,28 @@ function linearColorMap(colorA: string, colorB: string, min: number, max: number
   return hex;
 }
 
+function colorPointInterpolation(colors: string[], min: number, max: number, x: number) {
+  const step = (max - min) / (colors.length - 1);
+  if (x === min) {
+    return colors[0];
+  }
+  if (x === max) {
+    return colors[colors.length - 1];
+  }
+  const round = (x - min) / step;
+  const index = Math.floor(round);
+  if (round === index) {
+    return colors[index];
+  }
+  return linearColorMap(
+    colors[index],
+    colors[index + 1],
+    min + step * index,
+    min + step * (index + 1),
+    x
+  );
+}
+
 export const ConstantGenerator: FC<ConstantGeneratorProp> = ({ conclusion: { excluded, ordered } }) => {
   const [range, setRange] = useState<ConstantRange | null>(null);
   const groups = useMemo(() => {
@@ -123,12 +145,14 @@ export const ConstantGenerator: FC<ConstantGeneratorProp> = ({ conclusion: { exc
   };
   return (
     <div>
-      <div class="m-2 small">选择期望的定数范围以生成定数表。</div>
+      <div class="m-2 small">
+        选择期望的定数范围以生成定数表。定数将以<mark>均匀分布</mark>生成。
+      </div>
       <ConstantRangeSelect disabled={false} onSubmit={setRange} />
       {groups && (
         <>
           <Title title="生成的定数表" />
-          <ExportFile getFile={exportTableImage} />
+          <ExportFile getFile={exportTableImage} exportText="导出定数表图片" linkText="点击下载图片" />
           <div class="m-3"></div>
           <table ref={tableRef}>
             <tbody>
@@ -139,7 +163,7 @@ export const ConstantGenerator: FC<ConstantGeneratorProp> = ({ conclusion: { exc
                     style={{
                       backgroundColor: group.out
                         ? "#cccccc"
-                        : linearColorMap("#55ff55", "#ff5555", 0, groups.length - 2, i),
+                        : colorPointInterpolation(["#55ff55", "#ffff55", "#ff5555"], 0, groups.length - 2, i),
                     }}
                   >
                     {group.floor}

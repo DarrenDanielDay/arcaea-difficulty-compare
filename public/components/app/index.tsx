@@ -43,7 +43,7 @@ export const App = ({ impls }: AppProps) => {
 
   return (
     <div class="app">
-      <Title title="保存的进度" />
+      <Title title="保存的进度存档" />
       <div class="m-3">
         <SavesList store={store} onSelect={setTaskInit} />
       </div>

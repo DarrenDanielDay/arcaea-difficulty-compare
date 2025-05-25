@@ -1,10 +1,9 @@
-import { defineConfig } from 'wmr';
+import { defineConfig } from "wmr";
 
 // Full list of options: https://wmr.dev/docs/configuration
-export default defineConfig({
-	/* Your configuration here */
-	alias: {
-		react: 'preact/compat',
-		'react-dom': 'preact/compat'
-	}
+export default defineConfig((options) => {
+  return {
+    port: 1238,
+    publicPath: options.mode === "build" ? "/arcaea-difficulty-compare/" : "/",
+  };
 });

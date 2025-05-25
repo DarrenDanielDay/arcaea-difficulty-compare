@@ -1,0 +1,28 @@
+.chart-display {
+  width: 8em;
+  min-height: 8em;
+  .song-title {
+    text-align: center;
+    width: 6em;
+  }
+}
+
+.difficulty-pst {
+  color: var(--pst);
+}
+.difficulty-prs {
+  color: var(--prs);
+}
+.difficulty-ftr {
+  color: var(--ftr);
+}
+.difficulty-byd {
+  color: var(--byd);
+}
+.difficulty-etr {
+  color: var(--etr);
+}
+
+.difficulty {
+  font-weight: bolder;
+}

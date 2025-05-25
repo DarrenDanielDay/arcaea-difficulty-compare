@@ -1,0 +1,11 @@
+.compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+.balance-item.greater {
+  background-color: var(--bs-danger-bg-subtle);
+}
+
+.balance-item.less {
+  background-color: var(--bs-success-bg-subtle);
+}

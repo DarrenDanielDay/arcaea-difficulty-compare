@@ -23,23 +23,44 @@ interface ChartGroup {
   items: ChartTableItem[];
 }
 
+const easy = "#55ff55";
+const normal = "#ffff55";
+const hard = "#ff5555";
+const out = "#cccccc";
+
 const ChartTableItemDisplay = ({
   item: {
     entity: { data },
     constant,
   },
   old,
+  showDifference,
 }: {
   item: ChartTableItem;
   old?: boolean;
+  showDifference?: {
+    threshold: number;
+  };
 }) => {
   return (
     <div class="mx-1 d-flex flex-column align-items-center">
       <Jacket {...data} />
-      <div>{old ? `${constant}(old)` : constant.toFixed(2)}</div>
+      <div>
+        {old
+          ? `${constant}(old)`
+          : showDifference
+          ? renderDifference(constant, data.chart.constant, showDifference.threshold)
+          : constant.toFixed(2)}
+      </div>
     </div>
   );
 };
+
+function renderDifference(simulated: number, official: number, delta: number) {
+  const diff = simulated - official;
+  const color = diff < -delta ? "green" : diff > delta ? "red" : out;
+  return <span style={{ color }}>{`${diff > 0 ? "+" : diff < 0 ? "-" : ""}${Math.abs(diff).toFixed(2)}`}</span>;
+}
 
 function linearMap(distMin: number, distMax: number, srcMin: number, srcMax: number, x: number) {
   return ((x - srcMin) * (distMax - distMin)) / (srcMax - srcMin) + distMin;
@@ -78,17 +99,14 @@ function colorPointInterpolation(colors: string[], min: number, max: number, x: 
   if (round === index) {
     return colors[index];
   }
-  return linearColorMap(
-    colors[index],
-    colors[index + 1],
-    min + step * index,
-    min + step * (index + 1),
-    x
-  );
+  return linearColorMap(colors[index], colors[index + 1], min + step * index, min + step * (index + 1), x);
 }
 
 export const ConstantGenerator: FC<ConstantGeneratorProp> = ({ conclusion: { excluded, ordered } }) => {
   const [range, setRange] = useState<ConstantRange | null>(null);
+  const [showDifference, setShowDifference] = useState(false);
+  const defaultThreshold = 0.075;
+  const [threshold, setThreshold] = useState<number>(defaultThreshold);
   const groups = useMemo(() => {
     if (range == null) {
       return null;
@@ -152,6 +170,32 @@ export const ConstantGenerator: FC<ConstantGeneratorProp> = ({ conclusion: { exc
       {groups && (
         <>
           <Title title="生成的定数表" />
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              id="show-difference"
+              checked={showDifference}
+              onChange={(e) => setShowDifference(e.currentTarget.checked)}
+            />
+            <label class="form-check-label" for="show-difference">
+              显示官谱定数差异
+            </label>
+          </div>
+          <div class="input-group mb-3">
+            <label class="input-group-text" for="threshold">
+              差阈值
+            </label>
+            <input
+              class="form-control"
+              type="number"
+              id="threshold"
+              value={threshold}
+              onChange={(e) =>
+                setThreshold(isNaN(+e.currentTarget.value) ? defaultThreshold : Math.abs(+e.currentTarget.value))
+              }
+            ></input>
+          </div>
           <ExportFile getFile={exportTableImage} exportText="导出定数表图片" linkText="点击下载图片" />
           <div class="m-3"></div>
           <table ref={tableRef}>
@@ -162,15 +206,20 @@ export const ConstantGenerator: FC<ConstantGeneratorProp> = ({ conclusion: { exc
                     class="text-center px-2"
                     style={{
                       backgroundColor: group.out
-                        ? "#cccccc"
-                        : colorPointInterpolation(["#55ff55", "#ffff55", "#ff5555"], 0, groups.length - 2, i),
+                        ? out
+                        : colorPointInterpolation([easy, normal, hard], 0, groups.length - 2, i),
                     }}
                   >
                     {group.floor}
                   </td>
                   <td key={i} class="d-flex align-items-center flex-wrap">
                     {group.items.map((item) => (
-                      <ChartTableItemDisplay key={item.entity.id} item={item} old={group.out} />
+                      <ChartTableItemDisplay
+                        key={item.entity.id}
+                        item={item}
+                        old={group.out}
+                        showDifference={showDifference ? { threshold } : undefined}
+                      />
                     ))}
                   </td>
                 </tr>

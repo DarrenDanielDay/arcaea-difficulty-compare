@@ -24,10 +24,37 @@ export const SavesList = <T extends unknown>({ store, onSelect }: SavesListProp<
       setSaves(await store.list());
     })();
   }, []);
+  const importSaves = (
+    <form
+      class="my-2"
+      onSubmit={(e) => {
+        e.preventDefault();
+        const input = document.getElementById("saves-input") as HTMLInputElement;
+        if (input.files?.length) {
+          input.files[0].text().then((text) => {
+            const save = JSON.parse(text);
+            store.put(save);
+          });
+        }
+      }}
+    >
+      <div class="input-group mb-3">
+        <input placeholder="选择存档文件" type="file" class="form-control" id="saves-input" accept=".json" />
+        <button class="btn btn-primary" type="submit">
+          导入存档
+        </button>
+      </div>
+    </form>
+  );
   if (saves.length === 0) {
-    return <div>暂无存档</div>;
+    return (
+      <>
+        <div>暂无存档</div>
+        {importSaves}
+      </>
+    );
   }
-  return saves.map((saveId) => (
+  const list = saves.map((saveId) => (
     <div class="border p-2 d-flex align-items-center justify-content-between" style={{ maxWidth: "24em" }} key={saveId}>
       <div class="align-self-start">{saveId}</div>
       <div class="align-self-end d-flex justify-content-center align-items-center" style={{ width: "8em" }}>
@@ -48,7 +75,6 @@ export const SavesList = <T extends unknown>({ store, onSelect }: SavesListProp<
               return;
             }
             await store.delete(saveId);
-            setSaves(await store.list());
           }}
         >
           删除
@@ -56,4 +82,10 @@ export const SavesList = <T extends unknown>({ store, onSelect }: SavesListProp<
       </div>
     </div>
   ));
+  return (
+    <>
+      {list}
+      {importSaves}
+    </>
+  );
 };

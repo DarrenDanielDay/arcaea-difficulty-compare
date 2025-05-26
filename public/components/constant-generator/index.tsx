@@ -170,7 +170,7 @@ export const ConstantGenerator: FC<ConstantGeneratorProp> = ({ conclusion: { exc
                   </td>
                   <td key={i} class="d-flex align-items-center flex-wrap">
                     {group.items.map((item) => (
-                      <ChartTableItemDisplay key={item.entity.id} item={item} />
+                      <ChartTableItemDisplay key={item.entity.id} item={item} old={group.out} />
                     ))}
                   </td>
                 </tr>

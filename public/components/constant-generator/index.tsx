@@ -166,7 +166,7 @@ export const ConstantGenerator: FC<ConstantGeneratorProp> = ({ conclusion: { exc
       <div class="m-2 small">
         选择期望的定数范围以生成定数表。定数将以<mark>均匀分布</mark>生成。
       </div>
-      <ConstantRangeSelect disabled={false} onSubmit={setRange} />
+      <ConstantRangeSelect disabled={false} onSubmit={setRange} unlimited />
       {groups && (
         <>
           <Title title="生成的定数表" />

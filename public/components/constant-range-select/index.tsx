@@ -2,12 +2,14 @@ import { FunctionComponent as FC } from "preact";
 import { ConstantRange } from "../../services/chart-data";
 
 export interface ConstantRangeSelectProp {
+  unlimited?: boolean;
   submitText?: string;
   disabled: boolean;
   onSubmit: (range: ConstantRange) => void;
 }
 
-export const ConstantRangeSelect: FC<ConstantRangeSelectProp> = ({ submitText, disabled, onSubmit }) => {
+export const ConstantRangeSelect: FC<ConstantRangeSelectProp> = ({ unlimited, submitText, disabled, onSubmit }) => {
+  const step = unlimited ? "any" : "0.1";
   return (
     <form
       onSubmit={(e) => {
@@ -28,16 +30,16 @@ export const ConstantRangeSelect: FC<ConstantRangeSelectProp> = ({ submitText, d
           id="min-constant"
           class="form-control"
           type="number"
-          step="0.1"
+          step={step}
           name="min-constant"
           disabled={disabled}
-        ></input>
+          ></input>
         <div class="input-group-text">≤定数≤</div>
         <input
           id="max-constant"
           class="form-control"
           type="number"
-          step="0.1"
+          step={step}
           name="max-constant"
           disabled={disabled}
         ></input>
